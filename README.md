@@ -1,5 +1,5 @@
 
-# ⚡ Smart AI Energy Dashboard
+# ⚡ Smart AI Energy Kafka Pipeline
 
 A real-time Kafka-powered AI pipeline for forecasting electricity demand, anomaly detection, and interactive analysis using an LLM. Inspired by EirGrid’s Smart Grid Dashboard.
 
@@ -100,7 +100,7 @@ AI will reply with stats, trend summaries, and flagged events using the latest K
 
 ## 📸 UI Preview
 
-> Insert screenshots of the dashboard for Forecast, Lag, and Std Dev charts here.
+> COMMING SOON
 
 ---
 
@@ -112,4 +112,4 @@ MIT – use, fork, build cool stuff.
 
 ## 👨‍💻 Author
 
-Made with ❤️ by [your-name] for AI4EU Graphene.
+Made with ❤️ by Vaibhav for Graphene.
