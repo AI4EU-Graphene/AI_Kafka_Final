@@ -1,0 +1,4 @@
+flask
+kafka-python
+joblib
+scikit-learn

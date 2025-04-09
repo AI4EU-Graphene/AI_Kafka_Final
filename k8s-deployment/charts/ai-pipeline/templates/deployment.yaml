@@ -1,0 +1,36 @@
+{{- range .Values.services }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}
+  labels:
+    app: {{ .name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .name }}
+    spec:
+      initContainers:
+        - name: wait-for-kafka
+          image: busybox
+          command:
+            - sh
+            - -c
+            - >
+              until nc -z kafka.default.svc.cluster.local 9092; do echo waiting for kafka; sleep 2; done;
+      containers:
+        - name: {{ .name }}
+          image: "{{ .image.repository }}:{{ .image.tag }}"
+          imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .port }}
+          env:
+            - name: KAFKA_BROKER_URL
+              value: "{{ $.Values.global.kafkaBroker }}"
+---
+{{- end }}

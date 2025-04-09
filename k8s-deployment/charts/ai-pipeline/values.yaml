@@ -1,0 +1,69 @@
+global:
+  kafkaBroker: kafka.default.svc.cluster.local:9092
+  imagePullPolicy: Always
+  imageTag: latest
+service:
+  type: ClusterIP
+ingress:
+  enabled: false
+
+services:
+  - name: smart-ingestor
+    port: 5100
+    image:
+      repository: vaibhavtechie/smart-ingestor
+      tag: latest
+
+  - name: smart-preprocessor
+    port: 5101
+    image:
+      repository: vaibhavtechie/smart-preprocessor
+      tag: latest
+
+  - name: smart-ml-preprocessor
+    port: 5102
+    image:
+      repository: vaibhavtechie/smart-ml-preprocessor
+      tag: latest
+
+  - name: smart-model-trainer
+    port: 5103
+    image:
+      repository: vaibhavtechie/smart-model-trainer
+      tag: latest
+
+  - name: smart-ml-forecaster
+    port: 5104
+    image:
+      repository: vaibhavtechie/smart-ml-forecaster
+      tag: latest
+
+  - name: smart-anomaly-detector
+    port: 5105
+    image:
+      repository: vaibhavtechie/smart-anomaly-detector
+      tag: latest
+
+  - name: smart-alert-engine
+    port: 5106
+    image:
+      repository: vaibhavtechie/smart-alert-engine
+      tag: latest
+
+  - name: ai-pipeline
+    port: 5107
+    image:
+      repository: vaibhavtechie/ai-pipeline
+      tag: latest
+
+  - name: smart-grid-rebalancer
+    port: 5110
+    image:
+      repository: vaibhavtechie/smart-grid-rebalancer
+      tag: latest
+
+  - name: smart-storage-optimizer
+    port: 5111
+    image:
+      repository: vaibhavtechie/smart-storage-optimizer
+      tag: latest

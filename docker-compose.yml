@@ -1,0 +1,175 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+    networks:
+      - kafka-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,HOST://localhost:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,HOST://0.0.0.0:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - kafka-network
+
+  smart-ingestor:
+    build: ./smart-ingestor
+    environment:
+      KAFKA_BROKER_URL: kafka:9092
+      KAFKA_TOPIC: raw_energy_data
+    depends_on:
+      - kafka
+    ports:
+      - "5100:5000"
+    networks:
+      - kafka-network
+
+  smart-preprocessor:
+    build: ./smart-preprocessor
+    environment:
+      KAFKA_BROKER_URL: kafka:9092
+      RAW_TOPIC: raw_energy_data
+      CLEANED_TOPIC: preprocessed_data
+      KAFKA_GROUP_ID: smart-preprocessor-group
+    depends_on:
+      - kafka
+    ports:
+      - "5101:5000"
+    networks:
+      - kafka-network
+
+  smart-ml-preprocessor:
+    build: ./smart-ml-preprocessor
+    environment:
+      KAFKA_BROKER_URL: kafka:9092
+      CLEANED_TOPIC: preprocessed_data
+      ML_READY_TOPIC: ml_ready_data
+      KAFKA_GROUP_ID: smart-ml-preprocessor-group
+    depends_on:
+      - kafka
+    ports:
+      - "5102:5000"
+    networks:
+      - kafka-network
+
+  smart-model-trainer:
+    build: ./smart-model-trainer
+    environment:
+      KAFKA_BROKER_URL: kafka:9092
+      TRAINING_TOPIC: preprocessed_data
+      TRAINING_BATCH_SIZE: 50000
+      MODEL_OUTPUT_PATH: /models/latest_model.pkl
+      KAFKA_GROUP_ID: smart-model-trainer-group
+    volumes:
+      - ./models:/models
+    depends_on:
+      - kafka
+    ports:
+      - "5103:5000"
+    networks:
+      - kafka-network
+
+  smart-ml-forecaster:
+    build: ./smart-ml-forecaster
+    environment:
+      KAFKA_BROKER_URL: kafka:9092
+      ML_READY_TOPIC: ml_ready_data
+      FORECAST_TOPIC: forecast_output
+      MODEL_PATH: /models/latest_model.pkl
+      KAFKA_GROUP_ID: smart-ml-forecaster-group
+    volumes:
+      - ./models:/models
+    depends_on:
+      - kafka
+    ports:
+      - "5104:5000"
+    networks:
+      - kafka-network
+
+  smart-anomaly-detector:
+    build: ./smart-anomaly-detector
+    environment:
+      KAFKA_BROKER_URL: kafka:9092
+      FORECAST_TOPIC: forecast_output
+      ANOMALY_TOPIC: anomaly_output
+      KAFKA_GROUP_ID: smart-anomaly-detector-group
+    depends_on:
+      - kafka
+    ports:
+      - "5105:5000"
+    networks:
+      - kafka-network
+
+  smart-alert-engine:
+    build: ./smart-alert-engine
+    environment:
+      KAFKA_BROKER_URL: kafka:9092
+      ANOMALY_TOPIC: anomaly_output
+      ALERT_TOPIC: alert_output
+      KAFKA_GROUP_ID: smart-alert-engine-group
+    depends_on:
+      - kafka
+    ports:
+      - "5106:5000"
+    networks:
+      - kafka-network
+
+  ai-pipeline:
+    build:
+      context: ./ai-pipeline
+    ports:
+      - "5107:5000"
+    depends_on:
+      - kafka
+    networks:
+      - kafka-network
+    restart: unless-stopped
+
+  smart-grid-rebalancer:
+    build:
+      context: ./smart-grid-rebalancer
+    ports:
+      - "5110:5000"
+    networks:
+      - kafka-network
+    depends_on:
+      - kafka
+
+  smart-storage-optimizer:
+    build:
+      context: ./smart-storage-optimizer
+    environment:
+      KAFKA_BROKER_URL: kafka:9092
+      OPTIMIZER_INPUT_TOPIC: anomaly_output
+    ports:
+      - "5111:5000"
+    networks:
+      - kafka-network
+    depends_on:
+      - kafka
+  ai-dashboard:
+    build: ./ai_dashboard
+    ports:
+      - "5150:5000"  # or whatever port you want
+    environment:
+      KAFKA_BROKER_URL: kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - kafka-network
+
+networks:
+  kafka-network:
+    driver: bridge
+
