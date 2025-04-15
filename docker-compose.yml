@@ -125,17 +125,6 @@ services:
     networks:
       - kafka-network
 
-  ai-pipeline:
-    build:
-      context: ./ai-pipeline
-    ports:
-      - "5107:5000"
-    depends_on:
-      - kafka
-    networks:
-      - kafka-network
-    restart: unless-stopped
-
   smart-grid-rebalancer:
     build:
       context: ./smart-grid-rebalancer
@@ -158,16 +147,6 @@ services:
       - kafka-network
     depends_on:
       - kafka
-  ai-dashboard:
-    build: ./ai_dashboard
-    ports:
-      - "5150:5000"  # or whatever port you want
-    environment:
-      KAFKA_BROKER_URL: kafka:9092
-    depends_on:
-      - kafka
-    networks:
-      - kafka-network
 
 networks:
   kafka-network:

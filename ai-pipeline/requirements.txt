@@ -1,5 +1,0 @@
-flask
-kafka-python
-requests
-joblib
-scikit-learn
