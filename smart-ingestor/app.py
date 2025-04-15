@@ -2,7 +2,9 @@
 
 from flask import Flask, jsonify, request
 import logging
-from eirgrid_streamer import download_data_main  # streaming logic
+import asyncio
+from ingestor import ingest_data
+from threading import Thread
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -18,10 +20,12 @@ def home():
 
 @app.route("/stream", methods=["GET"])
 def stream_data():
-    logger.info("Streaming process started via /stream endpoint")
+    logger.info("Starting continuous live streaming via /stream")
+    def run_loop():
+        asyncio.run(ingest_data())
     try:
-        download_data_main()
-        return jsonify({"status": "Streaming started"})
+        Thread(target=run_loop, daemon=True).start()
+        return jsonify({"status": "Live streaming started in background"})
     except Exception as e:
         logger.error(f"Streaming failed: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
