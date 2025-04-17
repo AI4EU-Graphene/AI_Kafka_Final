@@ -1,4 +1,4 @@
-# How to Run the AI Energy Pipeline
+# How to Run the Kafka Energy Pipeline
 
 
 ## Prerequisites
