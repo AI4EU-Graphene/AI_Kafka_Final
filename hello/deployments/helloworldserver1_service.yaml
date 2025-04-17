@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworldserver1
+spec:
+  ports:
+  - name: protobuf-api
+    nodePort: 30831
+    port: 30831
+    targetPort: 8061
+  selector:
+    app: helloworldserver1
+  type: NodePort

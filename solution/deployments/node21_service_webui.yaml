@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: node21webui
+spec:
+  ports:
+  - name: webui
+    nodePort: 31954
+    port: 31954
+    targetPort: 8062
+  selector:
+    app: node21
+  type: NodePort

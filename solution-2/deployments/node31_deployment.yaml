@@ -1,0 +1,25 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node31
+  labels:
+    app: node31
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node31
+  template:
+    metadata:
+      labels:
+        app: node31
+    spec:
+      containers:
+      - name: node31
+        image: vaibhavtechie/node3-image:latest
+        ports:
+        - name: protobuf-api
+          containerPort: 8061
+        - name: webui
+          containerPort: 8062

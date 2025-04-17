@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package component;
+
+service Component {
+  rpc Execute(Empty) returns (Empty);
+}
+
+message Empty {
+}

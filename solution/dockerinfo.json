@@ -1,0 +1,1 @@
+{"docker_info_list": [{"container_name": "node11", "ip_address": "node11", "port": 31032}, {"container_name": "node21", "ip_address": "node21", "port": 32005}, {"container_name": "node31", "ip_address": "node31", "port": 32555}, {"container_name": "orchestrator", "ip_address": "orchestrator", "port": 30984}]}

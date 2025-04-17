@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: helloworldclient1
+  name: helloworldclient1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloworldclient1
+  template:
+    metadata:
+      labels:
+        app: helloworldclient1
+    spec:
+      containers:
+      - image: gitlab-registry.telecom-paris.fr/teralab/ai-experiment-hello-world/client:v2
+        imagePullPolicy: Always
+        name: helloworldclient1
+        ports:
+        - containerPort: 8061
+          name: protobuf-api
+        - containerPort: 8062
+          name: webui
